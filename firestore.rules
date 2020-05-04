@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+ 
+    function notUpdating(field) {
+    return !(field in request.resource.data)
+      || resource.data[field] == request.resource.data[field]
+    }
+
+    match /databases/{database}/documents {
+      match /users/{userId} {
+        allow read: if true;
+        allow write: if true;
+      }
+    }
+    match /databases/{database}/documents {
+      match /hamburguesa/{userId} {
+        allow write: if notUpdating('ingredientes')
+          && notUpdating('id');
+        allow read: if true;
+      }
+    }
+}
